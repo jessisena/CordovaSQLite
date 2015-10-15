@@ -171,13 +171,13 @@ public class CordovaSQLite extends CordovaPlugin
     }
 
     /**
-     * Exec query to get a single result value.
+     * Exec query to get a single result String value.
      *
      * @param query
      * @param args
      * @return result.
      */
-    private void execQuerySingleResult (String query, String[] args)
+    private void execQuerySingleResultString (String query, String[] args)
     {
         //Log.d("CordovaSQLite", "Executing query: " + query + " with arg: " + args[0]);
         try
@@ -195,6 +195,49 @@ public class CordovaSQLite extends CordovaPlugin
             _callbackContext.error(ex.getMessage());
         }
     }
+    
+    /**
+     * Exec query to get a single result value (String or BLOB)
+     *
+     * @param query
+     * @param args
+     * @return result.
+     */
+    private void execQuerySingleResult (String query, String[] args)
+    {
+        Log.d("CordovaSQLite", "Executing query: " + query + " with arg: " + args[0]);
+        try
+        {
+            //String result = null;
+            Cursor cursor = myDb.rawQuery(query, args);
+            if (cursor.moveToFirst())
+                String type = cursor.getType(0);
+            
+                if(type == cursor.FIELD_TYPE_BLOB){
+                    byte[] result = cursor.getBlob(0);
+                    cursor.close();
+                    _callbackContext.success(result);
+                }else if(type == cursor. FIELD_TYPE_STRING){
+                    String result = cursor.getString(0);
+                    cursor.close();
+                    _callbackContext.success(result);                    
+                }else{
+                    Log.d("CordovaSQLite", "Retorn tipus no contemplat (BLOB, String)");
+                    cursor.close();
+                    _callbackContext.error("Retorn tipus no contemplat (BLOB, String)"); 
+                }
+            
+                
+                
+            //cursor.close();
+            //_callbackContext.success(result);
+        }
+        catch (SQLiteException ex)
+        {
+            Log.d("CordovaSQLite", ex.getMessage());
+            _callbackContext.error(ex.getMessage());
+        }
+    }    
 
     /**
      * Execute a query and return a 2D JSON array. Rows are records and columns are data cols.
