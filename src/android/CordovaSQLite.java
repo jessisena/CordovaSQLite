@@ -208,17 +208,17 @@ public class CordovaSQLite extends CordovaPlugin
         Log.d("CordovaSQLite", "Executing query: " + query + " with arg: " + args[0]);
         try
         {
-            //String result = null;
+            String result = null;
             Cursor cursor = myDb.rawQuery(query, args);
             if (cursor.moveToFirst()){
                 int type = cursor.getType(0);
             
                 if(type == cursor.FIELD_TYPE_BLOB){
-                    byte[] result = cursor.getBlob(0);
+                    byte[] resultBLOB = cursor.getBlob(0);
                     cursor.close();
-                    _callbackContext.success(result);
+                    _callbackContext.success(resultBLOB);
                 }else if(type == cursor. FIELD_TYPE_STRING){
-                    String result = cursor.getString(0);
+                    result = cursor.getString(0);
                     cursor.close();
                     _callbackContext.success(result);                    
                 }else{
@@ -229,7 +229,7 @@ public class CordovaSQLite extends CordovaPlugin
             
             }else{
                 cursor.close();
-                _callbackContext.success(null);   
+                _callbackContext.success(result);   
             }
                 
             //cursor.close();
