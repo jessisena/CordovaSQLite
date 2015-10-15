@@ -7,6 +7,7 @@ import org.json.JSONException;
 import android.util.Log;
 import android.database.Cursor;
 import android.database.sqlite.*;
+import android.util.Base64;
 
 /**
  * This class handles connection with a SQLite database on the device. The database can be residing on the internal or external storage.
@@ -214,9 +215,11 @@ public class CordovaSQLite extends CordovaPlugin
                 int type = cursor.getType(0);
             
                 if(type == cursor.FIELD_TYPE_BLOB){
-                    byte[] resultBLOB = cursor.getBlob(0);
+                    byte[] resultBLOB = cursor.getBlob(0);                    
+                    result = Base64.encodeToString(resultBLOB, Base64.DEFAULT);
+                    Log.d("CordovaSQLite", "result trnasformat BLOB: "+result);
                     cursor.close();
-                    _callbackContext.success(resultBLOB);
+                    _callbackContext.success(result);
                 }else if(type == cursor. FIELD_TYPE_STRING){
                     result = cursor.getString(0);
                     cursor.close();
