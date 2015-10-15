@@ -210,7 +210,7 @@ public class CordovaSQLite extends CordovaPlugin
         {
             //String result = null;
             Cursor cursor = myDb.rawQuery(query, args);
-            if (cursor.moveToFirst())
+            if (cursor.moveToFirst()){
                 int type = cursor.getType(0);
             
                 if(type == cursor.FIELD_TYPE_BLOB){
@@ -227,13 +227,14 @@ public class CordovaSQLite extends CordovaPlugin
                     _callbackContext.error("Retorn tipus no contemplat (BLOB, String)"); 
                 }
             
-                
+            }else{
+                cursor.close();
+                _callbackContext.success(null);   
+            }
                 
             //cursor.close();
             //_callbackContext.success(result);
-        }
-        catch (SQLiteException ex)
-        {
+        }catch (SQLiteException ex){
             Log.d("CordovaSQLite", ex.getMessage());
             _callbackContext.error(ex.getMessage());
         }
