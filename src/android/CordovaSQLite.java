@@ -226,6 +226,7 @@ public class CordovaSQLite extends CordovaPlugin
                     //_callbackContext.success(result);
                     resultPlugin.setKeepCallback(true);
                     _callbackContext.sendPluginResult(resultPlugin);
+                    resultPlugin.setKeepCallback(false);
                     
                 }else if(type == cursor. FIELD_TYPE_STRING){
                     result = cursor.getString(0);
