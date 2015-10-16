@@ -221,11 +221,17 @@ public class CordovaSQLite extends CordovaPlugin
                     result = Base64.encodeToString(resultBLOB, Base64.DEFAULT);
                     if(I) Log.d(TAG, "result trnasformat BLOB: "+result);
                     cursor.close();
-                    _callbackContext.success(result);
+                    PluginResult resultPlugin = new PluginResult(PluginResult.Status.OK,
+                        result);
+                    //_callbackContext.success(result);
+                    resultPlugin.setKeepCallback(true);
+                    _callbackContext.sendPluginResult(resultPlugin);
+                    
                 }else if(type == cursor. FIELD_TYPE_STRING){
                     result = cursor.getString(0);
                     cursor.close();
-                    _callbackContext.success(result);                    
+                    _callbackContext.success(result);  
+                    
                 }else{
                     if(I) Log.d(TAG, "Retorn tipus no contemplat (BLOB, String)");
                     cursor.close();
