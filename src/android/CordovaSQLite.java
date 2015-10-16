@@ -18,6 +18,8 @@ public class CordovaSQLite extends CordovaPlugin
 {
     CallbackContext _callbackContext = null;
     SQLiteDatabase myDb = null; // Database object
+    private static final String TAG = "CordovaSQLite";
+    private static final boolean I = false;
 
     /**
      * Executes the request and returns PluginResult.
@@ -32,7 +34,7 @@ public class CordovaSQLite extends CordovaPlugin
      */
     public boolean execute (String action, final String rawArgs, CallbackContext callbackContext)
     {
-        //Log.d("CordovaSQLite", "Plugin called for: " + action);
+        if(I) Log.d(TAG, "Plugin called for: " + action);
 
         _callbackContext = callbackContext;
 
@@ -145,7 +147,7 @@ public class CordovaSQLite extends CordovaPlugin
             catch (SQLiteException ex)
             {
                 // Just catch and ignore the exception.
-                Log.d("CordovaSQLite", ex.getMessage());
+                Log.d(TAG, ex.getMessage());
                 this.myDb = null;
             }
         }
@@ -154,7 +156,7 @@ public class CordovaSQLite extends CordovaPlugin
         // In that case, we will discard the file:// part.
         if (fullDBFilePath.startsWith("file://"))
             fullDBFilePath = fullDBFilePath.substring(7);
-        Log.d("CordovaSQLite", "Opening database: " + fullDBFilePath);
+        if(I) Log.d(TAG, "Opening database: " + fullDBFilePath);
 
         try
         {
@@ -166,7 +168,7 @@ public class CordovaSQLite extends CordovaPlugin
         }
         catch (SQLiteException ex)
         {
-            Log.d("CordovaSQLite", "Can't open database: " + ex.getMessage());
+            Log.e(TAG, "Can't open database: " + ex.getMessage());
             _callbackContext.error(ex.getMessage());
         }
     }
@@ -180,7 +182,7 @@ public class CordovaSQLite extends CordovaPlugin
      */
     private void execQuerySingleResultString (String query, String[] args)
     {
-        //Log.d("CordovaSQLite", "Executing query: " + query + " with arg: " + args[0]);
+        if(I) Log.d(TAG, "Executing query: " + query + " with arg: " + args[0]);
         try
         {
             String result = null;
@@ -192,7 +194,7 @@ public class CordovaSQLite extends CordovaPlugin
         }
         catch (SQLiteException ex)
         {
-            Log.d("CordovaSQLite", ex.getMessage());
+            Log.e(TAG, ex.getMessage());
             _callbackContext.error(ex.getMessage());
         }
     }
@@ -206,7 +208,7 @@ public class CordovaSQLite extends CordovaPlugin
      */
     private void execQuerySingleResult (String query, String[] args)
     {
-        Log.d("CordovaSQLite", "Executing query: " + query + " with arg: " + args[0]);
+        if(I) Log.d(TAG, "Executing query: " + query + " with arg: " + args[0]);
         try
         {
             String result = null;
@@ -217,7 +219,7 @@ public class CordovaSQLite extends CordovaPlugin
                 if(type == cursor.FIELD_TYPE_BLOB){
                     byte[] resultBLOB = cursor.getBlob(0);                    
                     result = Base64.encodeToString(resultBLOB, Base64.DEFAULT);
-                    Log.d("CordovaSQLite", "result trnasformat BLOB: "+result);
+                    if(I) Log.d(TAG, "result trnasformat BLOB: "+result);
                     cursor.close();
                     _callbackContext.success(result);
                 }else if(type == cursor. FIELD_TYPE_STRING){
@@ -225,7 +227,7 @@ public class CordovaSQLite extends CordovaPlugin
                     cursor.close();
                     _callbackContext.success(result);                    
                 }else{
-                    Log.d("CordovaSQLite", "Retorn tipus no contemplat (BLOB, String)");
+                    if(I) Log.d(TAG, "Retorn tipus no contemplat (BLOB, String)");
                     cursor.close();
                     _callbackContext.error("Retorn tipus no contemplat (BLOB, String)"); 
                 }
@@ -235,10 +237,8 @@ public class CordovaSQLite extends CordovaPlugin
                 _callbackContext.success(result);   
             }
                 
-            //cursor.close();
-            //_callbackContext.success(result);
         }catch (SQLiteException ex){
-            Log.d("CordovaSQLite", ex.getMessage());
+            Log.e(TAG, ex.getMessage());
             _callbackContext.error(ex.getMessage());
         }
     }    
@@ -252,10 +252,10 @@ public class CordovaSQLite extends CordovaPlugin
      */
     private void execQueryArrayResult (String query, String[] args)
     {
-        /*
-    	Log.d("CordovaSQLite", "Executing query: " + query + " with arg: ");
-    	for (String string : args)
-    		Log.d("CordovaSQLite", string);
+        
+    	if(I) Log.d(TAG, "Executing query: " + query + " with arg: ");
+    	/*for (String string : args)
+    		if(I) Log.d(TAG, string);
     	*/
 
         try
@@ -288,15 +288,15 @@ public class CordovaSQLite extends CordovaPlugin
                 resultStr = resultStr.substring(0, resultStr.lastIndexOf(","));
             }
             resultStr += "]";
-            //Log.d("CordovaSQLite", "Result rowcount=" + cursor.getCount());
-            //Log.d("CordovaSQLite", "Result=" + resultStr);
+            if(I) Log.d(TAG, "Result rowcount=" + cursor.getCount());
+            if(I) Log.d(TAG, "Result=" + resultStr);
             cursor.close();
             // Set up the result object.
             _callbackContext.success(resultStr);
         }
         catch (SQLiteException ex)
         {
-            Log.d("CordovaSQLite", ex.getMessage());
+            Log.e(TAG, ex.getMessage());
             _callbackContext.error(ex.getMessage());
         }
     }
@@ -312,14 +312,14 @@ public class CordovaSQLite extends CordovaPlugin
         {
             for (String query : queries)
             {
-                //Log.d("CordovaSQLite", "Executing query: " + query);
+                if(I) Log.d(TAG, "Executing query: " + query);
                 myDb.execSQL(query);
             }
             _callbackContext.success();
         }
         catch (SQLiteException ex)
         {
-            Log.d("CordovaSQLite", ex.getMessage());
+            Log.e(TAG, ex.getMessage());
             _callbackContext.error(ex.getMessage());
         }
     }
