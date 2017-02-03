@@ -19,7 +19,7 @@ public class CordovaSQLite extends CordovaPlugin
     CallbackContext _callbackContext = null;
     SQLiteDatabase myDb = null; // Database object
     private static final String TAG = "CordovaSQLite";
-    private static final boolean I = false;
+    private static final boolean I = true;
 
     /**
      * Executes the request and returns PluginResult.
@@ -198,7 +198,7 @@ public class CordovaSQLite extends CordovaPlugin
             _callbackContext.error(ex.getMessage());
         }
     }
-    
+
     /**
      * Exec query to get a single result value (String or BLOB)
      *
@@ -215,11 +215,15 @@ public class CordovaSQLite extends CordovaPlugin
             Cursor cursor = myDb.rawQuery(query, args);
             if (cursor.moveToFirst()){
                 int type = cursor.getType(0);
-            
+
                 if(type == cursor.FIELD_TYPE_BLOB){
-                    byte[] resultBLOB = cursor.getBlob(0);                    
+                    byte[] resultBLOB = cursor.getBlob(0);
                     result = Base64.encodeToString(resultBLOB, Base64.DEFAULT);
                     if(I) Log.d(TAG, "result trnasformat BLOB: "+result);
+
+                    String text = new String(resultBLOB, "UTF-8");
+                    if(I) Log.d(TAG, "result text BLOB: "+text);
+
                     cursor.close();
                     PluginResult resultPlugin = new PluginResult(PluginResult.Status.OK,
                         result);
@@ -227,28 +231,28 @@ public class CordovaSQLite extends CordovaPlugin
                     resultPlugin.setKeepCallback(true);
                     _callbackContext.sendPluginResult(resultPlugin);
                     resultPlugin.setKeepCallback(false);
-                    
+
                 }else if(type == cursor. FIELD_TYPE_STRING){
                     result = cursor.getString(0);
                     cursor.close();
-                    _callbackContext.success(result);  
-                    
+                    _callbackContext.success(result);
+
                 }else{
                     if(I) Log.d(TAG, "Retorn tipus no contemplat (BLOB, String)");
                     cursor.close();
-                    _callbackContext.error("Retorn tipus no contemplat (BLOB, String)"); 
+                    _callbackContext.error("Retorn tipus no contemplat (BLOB, String)");
                 }
-            
+
             }else{
                 cursor.close();
-                _callbackContext.success(result);   
+                _callbackContext.success(result);
             }
-                
+
         }catch (SQLiteException ex){
             Log.e(TAG, ex.getMessage());
             _callbackContext.error(ex.getMessage());
         }
-    }    
+    }
 
     /**
      * Execute a query and return a 2D JSON array. Rows are records and columns are data cols.
@@ -259,7 +263,7 @@ public class CordovaSQLite extends CordovaPlugin
      */
     private void execQueryArrayResult (String query, String[] args)
     {
-        
+
     	if(I) Log.d(TAG, "Executing query: " + query + " with arg: ");
     	/*for (String string : args)
     		if(I) Log.d(TAG, string);
